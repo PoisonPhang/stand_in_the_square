@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using stand_in_the_square.Camera;
+
 namespace stand_in_the_square.Entities
 {
     /// <summary>
@@ -19,19 +21,19 @@ namespace stand_in_the_square.Entities
     public class Crate
     {
         // The game this crate belongs to
-        Game game;
+        private Game _game;
 
         // The VertexBuffer of crate vertices
-        VertexBuffer vertexBuffer;
+        private VertexBuffer _vertexBuffer;
 
         // The IndexBuffer defining the Crate's triangles
-        IndexBuffer indexBuffer;
+        private IndexBuffer _indexBuffer;
 
         // The effect to render the crate with
-        BasicEffect effect;
+        private BasicEffect _effect;
 
         // The texture to apply to the crate
-        Texture2D texture;
+        private Texture2D _texture;
 
         /// <summary>
         /// Creates a new crate instance
@@ -41,12 +43,12 @@ namespace stand_in_the_square.Entities
         /// <param name="world">The position and orientation of the crate in the world</param>
         public Crate(Game game, CrateType type, Matrix world)
         {
-            this.game = game;
-            this.texture = game.Content.Load<Texture2D>($"crate{(int)type}_diffuse");
+            _game = game;
+            _texture = game.Content.Load<Texture2D>($"crate{(int)type}_diffuse");
             InitializeVertices();
             InitializeIndices();
             InitializeEffect();
-            effect.World = world;
+            _effect.World = world;
         }
 
         /// <summary>
@@ -92,8 +94,8 @@ namespace stand_in_the_square.Entities
                 new VertexPositionNormalTexture() { Position = new Vector3( 1.0f, -1.0f,  1.0f), TextureCoordinate = new Vector2(1.0f, 1.0f), Normal = Vector3.Right },
             };
 
-            vertexBuffer = new VertexBuffer(game.GraphicsDevice, typeof(VertexPositionNormalTexture), vertexData.Length, BufferUsage.None);
-            vertexBuffer.SetData<VertexPositionNormalTexture>(vertexData);
+            _vertexBuffer = new VertexBuffer(_game.GraphicsDevice, typeof(VertexPositionNormalTexture), vertexData.Length, BufferUsage.None);
+            _vertexBuffer.SetData<VertexPositionNormalTexture>(vertexData);
         }
 
         /// <summary>
@@ -128,8 +130,8 @@ namespace stand_in_the_square.Entities
                 20, 23, 22
             };
 
-            indexBuffer = new IndexBuffer(game.GraphicsDevice, IndexElementSize.SixteenBits, indexData.Length, BufferUsage.None);
-            indexBuffer.SetData<short>(indexData);
+            _indexBuffer = new IndexBuffer(_game.GraphicsDevice, IndexElementSize.SixteenBits, indexData.Length, BufferUsage.None);
+            _indexBuffer.SetData<short>(indexData);
         }
 
         /// <summary>
@@ -137,31 +139,36 @@ namespace stand_in_the_square.Entities
         /// </summary>
         void InitializeEffect()
         {
-            effect = new BasicEffect(game.GraphicsDevice);
-            effect.World = Matrix.CreateScale(2.0f);
-            effect.View = Matrix.CreateLookAt(
+            _effect = new BasicEffect(_game.GraphicsDevice);
+            _effect.World = Matrix.CreateScale(1.0f);
+            _effect.View = Matrix.CreateLookAt(
                 new Vector3(8, 9, 12), // The camera position
                 new Vector3(0, 0, 0), // The camera target,
                 Vector3.Up            // The camera up vector
             );
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+            _effect.Projection = Matrix.CreatePerspectiveFieldOfView(
                 MathHelper.PiOver4,                         // The field-of-view 
-                game.GraphicsDevice.Viewport.AspectRatio,   // The aspect ratio
+                _game.GraphicsDevice.Viewport.AspectRatio,   // The aspect ratio
                 0.1f, // The near plane distance 
                 100.0f // The far plane distance
             );
-            effect.TextureEnabled = true;
-            effect.Texture = texture;
+            _effect.TextureEnabled = true;
+            _effect.Texture = _texture;
 
             // Turn on lighting
-            effect.LightingEnabled = true;
+            _effect.LightingEnabled = true;
             // Set up light 0
-            effect.DirectionalLight0.Enabled = true;
-            effect.DirectionalLight0.Direction = new Vector3(1f, 0, 1f);
-            effect.DirectionalLight0.DiffuseColor = new Vector3(0.8f, 0, 0);
-            effect.DirectionalLight0.SpecularColor = new Vector3(1f, 0.4f, 0.4f);
+            _effect.DirectionalLight0.Enabled = true;
+            _effect.DirectionalLight0.Direction = new Vector3(1f, 0, 1f);
+            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.8f, 0, 0);
+            _effect.DirectionalLight0.SpecularColor = new Vector3(1f, 0.4f, 0.4f);
 
-            effect.AmbientLightColor = new Vector3(0.03f, 0.03f, 0.03f);
+            _effect.AmbientLightColor = new Vector3(0.03f, 0.03f, 0.03f);
+        }
+
+        public void UpdatePosition(Matrix world)
+        {
+            _effect.World = world;
         }
 
         /// <summary>
@@ -171,18 +178,18 @@ namespace stand_in_the_square.Entities
         public void Draw(ICamera camera)
         {
             // set the view and projection matrices
-            effect.View = camera.View;
-            effect.Projection = camera.Projection;
+            _effect.View = camera.View;
+            _effect.Projection = camera.Projection;
 
             // apply the effect 
-            effect.CurrentTechnique.Passes[0].Apply();
+            _effect.CurrentTechnique.Passes[0].Apply();
 
             // set the vertex buffer
-            game.GraphicsDevice.SetVertexBuffer(vertexBuffer);
+            _game.GraphicsDevice.SetVertexBuffer(_vertexBuffer);
             // set the index buffer
-            game.GraphicsDevice.Indices = indexBuffer;
+            _game.GraphicsDevice.Indices = _indexBuffer;
             // Draw the triangles
-            game.GraphicsDevice.DrawIndexedPrimitives(
+            _game.GraphicsDevice.DrawIndexedPrimitives(
                 PrimitiveType.TriangleList, // Tye type to draw
                 0,                          // The first vertex to use
                 0,                          // The first index to use

@@ -8,7 +8,7 @@ namespace stand_in_the_square.Camera
     /// <summary>
     /// A 3D view camera
     /// </summary>
-    interface ICamera
+    public interface ICamera
     {
         /// <summary>
         /// The view matrix
