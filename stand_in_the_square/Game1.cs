@@ -2,12 +2,19 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using stand_in_the_square.Camera;
+using stand_in_the_square.Entities;
+
 namespace stand_in_the_square
 {
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private StationaryCamera _camera;
+        private Crate _crate;
+        private PlayerController _controller;
 
         public Game1()
         {
@@ -28,6 +35,9 @@ namespace stand_in_the_square
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            _crate = new Crate(this, CrateType.Cross, Matrix.Identity);
+            _camera = new StationaryCamera(this, new Vector3(0, 3, 10), Vector3.Zero);
+            _controller = new PlayerController(0.1f, 1);
         }
 
         protected override void Update(GameTime gameTime)
@@ -36,6 +46,9 @@ namespace stand_in_the_square
                 Exit();
 
             // TODO: Add your update logic here
+            _controller.Update(gameTime);
+            _crate.UpdatePosition(Matrix.CreateTranslation(_controller.Velocity.X, _controller.Velocity.Y, _controller.Velocity.Z));
+
 
             base.Update(gameTime);
         }
@@ -45,6 +58,7 @@ namespace stand_in_the_square
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _crate.Draw(_camera);
 
             base.Draw(gameTime);
         }
