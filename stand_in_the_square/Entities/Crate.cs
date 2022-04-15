@@ -160,15 +160,23 @@ namespace stand_in_the_square.Entities
             // Set up light 0
             _effect.DirectionalLight0.Enabled = true;
             _effect.DirectionalLight0.Direction = new Vector3(1f, 0, 1f);
-            _effect.DirectionalLight0.DiffuseColor = new Vector3(0.8f, 0, 0);
-            _effect.DirectionalLight0.SpecularColor = new Vector3(1f, 0.4f, 0.4f);
+            _effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 0.8f, 0.8f);
+            _effect.DirectionalLight0.SpecularColor = new Vector3(0.4f, 0.4f, 0.4f);
 
-            _effect.AmbientLightColor = new Vector3(0.03f, 0.03f, 0.03f);
+            _effect.AmbientLightColor = new Vector3(0.3f, 0.3f, 0.3f);
         }
 
         public void UpdatePosition(Matrix world)
         {
             _effect.World = world;
+        }
+
+        public void SetGreen(bool green)
+        {
+            if (green)
+                _effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 2f, 0.8f);
+            else
+                _effect.DirectionalLight0.DiffuseColor = new Vector3(1f, 0.8f, 0.8f);
         }
 
         /// <summary>

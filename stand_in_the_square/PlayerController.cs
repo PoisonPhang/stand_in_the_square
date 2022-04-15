@@ -29,7 +29,7 @@ namespace stand_in_the_square
 
             if (_curKeyboardState.IsKeyDown(Keys.W))
             {
-                Velocity += new Vector3(0, 0, -1 * velocity);
+                Velocity += new Vector3(0, 0, -velocity);
             }
 
             if (_curKeyboardState.IsKeyDown(Keys.S))
@@ -39,7 +39,7 @@ namespace stand_in_the_square
 
             if (_curKeyboardState.IsKeyDown(Keys.A))
             {
-                Velocity += new Vector3(-1 * velocity, 0, 0);
+                Velocity += new Vector3(-velocity, 0, 0);
             }
 
             if (_curKeyboardState.IsKeyDown(Keys.D))
